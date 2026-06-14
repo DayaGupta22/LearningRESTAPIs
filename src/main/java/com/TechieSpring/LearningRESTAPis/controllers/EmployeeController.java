@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import com.TechieSpring.LearningRESTAPis.entities.EmployeeEntity;
 import com.TechieSpring.LearningRESTAPis.services.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,13 +45,13 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<EmployeeDTO> CreateNewEmployee(@RequestBody EmployeeDTO inputEmployee){
+    public ResponseEntity<EmployeeDTO> CreateNewEmployee(@RequestBody @Valid EmployeeDTO inputEmployee){
        EmployeeDTO CreatedUser= employeeService.createNewEmployee(inputEmployee);
         return new ResponseEntity<>(CreatedUser, HttpStatus.CREATED);
     }
 
     @PutMapping( path ="/{employeeId}")
-    public ResponseEntity<EmployeeDTO> updateEmployeeById(@RequestBody EmployeeDTO employeeDto , @PathVariable Long employeeId){
+    public ResponseEntity<EmployeeDTO> updateEmployeeById(@RequestBody @Valid EmployeeDTO employeeDto , @PathVariable Long employeeId){
         return ResponseEntity.ok(employeeService.updateEmployeeById(employeeId ,employeeDto));
     }
     @DeleteMapping(path="/{employeeId}")
