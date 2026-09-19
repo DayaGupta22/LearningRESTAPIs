@@ -1,6 +1,8 @@
 package com.TechieSpring.LearningRESTAPis.services;
 import com.TechieSpring.LearningRESTAPis.dto.EmployeeDTO;
 import com.TechieSpring.LearningRESTAPis.entities.EmployeeEntity;
+
+import com.TechieSpring.LearningRESTAPis.exceptions.ResourceNotFoundException;
 import com.TechieSpring.LearningRESTAPis.repositories.EmployeeRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.util.ReflectionUtils;
@@ -43,21 +45,20 @@ public class EmployeeService {
     }
 
     public EmployeeDTO updateEmployeeById(Long employeeId, EmployeeDTO employeeDto) {
+        isExists(employeeId);
         EmployeeEntity employeeEntity = modelMapper.map(employeeDto ,EmployeeEntity.class);
         employeeEntity.setId(employeeId);
         EmployeeEntity updatedEmployeeEntity = employeeRepository.save(employeeEntity);
         return modelMapper.map(updatedEmployeeEntity ,EmployeeDTO.class);
 
     }
-    public boolean isExists(Long employeeId){
-       return  employeeRepository.existsById(employeeId);
-
-
+    public void isExists(Long employeeId){
+        boolean exists = employeeRepository.existsById(employeeId);
+        if (!exists) { throw new ResourceNotFoundException("Employee not found with id:"+employeeId);}
     }
 
     public boolean deleteEmployeeById(Long employeeId) {
-        boolean exists = employeeRepository.existsById(employeeId);
-        if (!exists) { return false;}
+        isExists(employeeId);
         employeeRepository.deleteById(employeeId);
         return true;
     }
@@ -65,10 +66,7 @@ public class EmployeeService {
     public EmployeeDTO patchEmployeeById(Long employeeId , Map<String,Object> updates) {
         System.out.println( employeeId);
         System.out.print( updates);
-        boolean exists = isExists(employeeId);
-        if (!exists) {
-            return null;
-        }
+         isExists(employeeId);
         EmployeeEntity employeeEntity = employeeRepository.findById(employeeId).orElseThrow(() -> new RuntimeException(
                 "Employee not found with id: " + employeeId));
         updates.forEach((field, value) -> {

@@ -1,13 +1,10 @@
 package com.TechieSpring.LearningRESTAPis.controllers;
 import com.TechieSpring.LearningRESTAPis.dto.EmployeeDTO;
-import com.TechieSpring.LearningRESTAPis.entities.EmployeeEntity;
+import com.TechieSpring.LearningRESTAPis.exceptions.ResourceNotFoundException;
 import com.TechieSpring.LearningRESTAPis.services.EmployeeService;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import com.TechieSpring.LearningRESTAPis.entities.EmployeeEntity;
-import com.TechieSpring.LearningRESTAPis.services.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,10 +30,10 @@ public class EmployeeController {
         Optional<EmployeeDTO> employeeDto = employeeService.getEmployeeById(id);
         return employeeDto
                 .map(employeeDto1 -> ResponseEntity.ok(employeeDto1))
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Employee with id " + id + " not found"));
 
     }
-    // get the all employees
+
     @GetMapping
     public ResponseEntity<List<EmployeeDTO>> getAllEmployees(@RequestParam(required = false, name="inputage") Integer age,
                                                 @RequestParam(required=false )String sortBy){
@@ -54,6 +51,7 @@ public class EmployeeController {
     public ResponseEntity<EmployeeDTO> updateEmployeeById(@RequestBody @Valid EmployeeDTO employeeDto , @PathVariable Long employeeId){
         return ResponseEntity.ok(employeeService.updateEmployeeById(employeeId ,employeeDto));
     }
+
     @DeleteMapping(path="/{employeeId}")
     public ResponseEntity< Boolean>deleteEmployeeById(@PathVariable Long employeeId){
         boolean gotDeleted =employeeService.deleteEmployeeById(employeeId);
@@ -62,8 +60,7 @@ public class EmployeeController {
 
         }
         return ResponseEntity.notFound().build();
-// if we want to customize code then
-//       return ResponseEntity.ok(employeeService.deleteEmployeeById(employeeId));
+
     }
     @PatchMapping(path="/{employeeId}")
     public ResponseEntity<EmployeeDTO> patchEmployeeById(@PathVariable Long employeeId ,@RequestBody Map<String ,Object> updates){
