@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,30 +14,25 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/employees")
 public class EmployeeController {
-//    private final EmployeeRepository employeeRepositoy;
+
     private final EmployeeService employeeService;
-    public EmployeeController(EmployeeService employeeService){
+    private final ModelMapper modelMapper;
+    public EmployeeController(EmployeeService employeeService,ModelMapper modelMapper) {
         this.employeeService = employeeService;
+        this.modelMapper = modelMapper;
     }
 
-    // get the employees
     @GetMapping("/{employeeId}")
     public ResponseEntity<EmployeeDTO>  getEmployeeById(@PathVariable(name="employeeId") Long id){
-// this is the firsy step
-//        EmployeeDTO employeeDto =employeeService.getEmployeeById(id);
-//        if(employeeDto == null) { return ResponseEntity.notFound().build();}
-//        return ResponseEntity.ok(employeeDto);
-        // another method is
-        Optional<EmployeeDTO> employeeDto = employeeService.getEmployeeById(id);
-        return employeeDto
-                .map(employeeDto1 -> ResponseEntity.ok(employeeDto1))
-                .orElseThrow(() -> new ResourceNotFoundException("Employee with id " + id + " not found"));
 
+        EmployeeDTO employeeDto = employeeService.getEmployeeById(id);
+        return ResponseEntity.ok(employeeDto);
     }
 
     @GetMapping
-    public ResponseEntity<List<EmployeeDTO>> getAllEmployees(@RequestParam(required = false, name="inputage") Integer age,
-                                                @RequestParam(required=false )String sortBy){
+    public ResponseEntity<List<EmployeeDTO>> getAllEmployees(
+            @RequestParam(required = false, name="inputage") Integer age,
+            @RequestParam(required=false )String sortBy){
 
         return ResponseEntity.ok(employeeService.getAllEmployees());
     }
@@ -62,6 +58,7 @@ public class EmployeeController {
         return ResponseEntity.notFound().build();
 
     }
+
     @PatchMapping(path="/{employeeId}")
     public ResponseEntity<EmployeeDTO> patchEmployeeById(@PathVariable Long employeeId ,@RequestBody Map<String ,Object> updates){
         EmployeeDTO employeeDto= employeeService.patchEmployeeById(employeeId,updates);

@@ -2,10 +2,14 @@ package com.TechieSpring.LearningRESTAPis.services;
 import com.TechieSpring.LearningRESTAPis.dto.EmployeeDTO;
 import com.TechieSpring.LearningRESTAPis.entities.EmployeeEntity;
 
+import com.TechieSpring.LearningRESTAPis.entities.User;
 import com.TechieSpring.LearningRESTAPis.exceptions.ResourceNotFoundException;
 import com.TechieSpring.LearningRESTAPis.repositories.EmployeeRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.util.ReflectionUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.lang.reflect.Field;
 import java.util.List;
@@ -14,20 +18,23 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class EmployeeService {
+
     private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
+
     public EmployeeService(EmployeeRepository employeeRepository, ModelMapper modelMapper){
         this.employeeRepository = employeeRepository;
         this.modelMapper = modelMapper;
     }
 
-    public Optional<EmployeeDTO> getEmployeeById(Long id) {
-//        EmployeeEntity employeeEntity= employeeRepository.findById(id);
-//
-//        return modelMapper.map(employeeEntity , EmployeeDTO.class);
-        return employeeRepository.findById(id).map(employeeEntity -> modelMapper.map(employeeEntity, EmployeeDTO.class));
+    public EmployeeDTO getEmployeeById(Long id) {
+       User user =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+       log.info("user {}",user);
 
+        EmployeeEntity employee = employeeRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Employee not found"));
+        return modelMapper.map(employee,EmployeeDTO.class);
     }
 
     public List<EmployeeDTO> getAllEmployees() {
