@@ -34,32 +34,26 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(username).orElseThrow(() -> new ResourceNotFoundException("USER NOT FOUND with email" + username+ "not found"));
     }
 
+
     public User getUserById(Long userId){
         return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("USER NOT FOUND with id" + userId+ "not found"));
     }
-    public AuthResponse signUp(SignUpDto signUpDto) {
 
+
+    public AuthResponse signUp(SignUpDto signUpDto) {
         Optional<User> user =
                 userRepository.findByEmail(signUpDto.getEmail());
-
         if (user.isPresent()) {
             throw new BadCredentialsException(
-                    "User already present " + signUpDto.getEmail()
-            );
+                    "User already present " + signUpDto.getEmail());
         }
-
         User toCreate = modelMapper.map(signUpDto, User.class);
-
         toCreate.setPassword(
                 passwordEncoder.encode(signUpDto.getPassword())
         );
-
         User savedUser = userRepository.save(toCreate);
-
         String token = jwtService.generateToken(savedUser);
-
         UserDto userDto = modelMapper.map(savedUser, UserDto.class);
-
         return new AuthResponse(userDto, token);
     }
 

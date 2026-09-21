@@ -32,11 +32,11 @@ public class AuthController {
    }
 
    @PostMapping("/login")
-    public ResponseEntity<String>login(@RequestBody LoginDto loginDto, HttpServletRequest request,HttpServletResponse response) {
+    public String login(@RequestBody LoginDto loginDto, HttpServletRequest request,HttpServletResponse response) {
        String token = authService.login(loginDto);
        Cookie cookie=new Cookie("token",token);
        cookie.setHttpOnly(true);
        response.addCookie(cookie);
-       return ResponseEntity.ok(token);
+     return  token;
    }
 }

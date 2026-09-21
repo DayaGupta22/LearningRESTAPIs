@@ -38,6 +38,7 @@ public class JwtService {
                 .signWith(getSecretKey())
                 .compact();
     }
+
     public Long getUserIdFromtoken(String token){
         Claims claims = Jwts.parser()
                 .verifyWith(getSecretKey())
