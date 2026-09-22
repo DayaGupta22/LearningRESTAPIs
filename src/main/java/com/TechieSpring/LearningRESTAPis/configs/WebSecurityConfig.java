@@ -38,18 +38,7 @@ public class WebSecurityConfig {
 
         return httpsecurity.build();
     }
-//    @Bean
-//    UserDetailsService myInMemoryUserDetailsService(){
-//        UserDetails normalUser = User
-//                .withUsername("daya")
-//                .password(passwordEncoder().encode("daya@123"))
-//                .roles("USER")
-//                .build();
-//        UserDetails adminUser= User
-//                .withUsername("Sanju")
-//                .password(passwordEncoder().encode("sanju@123")).roles("ADMIN").build();
-//        return new InMemoryUserDetailsManager(normalUser,adminUser);
-//    }
+//
 
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
